@@ -1,0 +1,6 @@
+digraph F { rankdir=LR; node [shape=box style="rounded,filled" fontname="Helvetica" fontsize=11 fillcolor="#eef6f0" color="#1e7f4f"]; edge[fontname="Helvetica" fontsize=9];
+ u [label="User message"]; c [label="DIET confidence\n< 0.6 or ambiguous\n(gap < 0.1)" shape=diamond fillcolor="#fff4d6" color="#b26a00"];
+ ok [label="Normal flow\n(reset counter)"];
+ s1 [label="Stage 1\nopen rephrase prompt\n+ example"]; s2 [label="Stage 2\nconstrained quick replies\nPlan | Carbon | Human"];
+ h [label="Handover\naction_handover_to_human" fillcolor="#fde8e6" color="#b3261e"];
+ u->c; c->ok [label="no"]; c->s1 [label="yes, count=0"]; s1->c [label="retry" style=dashed]; c->s2 [label="yes, count=1"]; s2->c [label="retry" style=dashed]; c->h [label="yes, count≥2"]; }

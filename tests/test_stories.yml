@@ -1,0 +1,28 @@
+version: "3.1"
+stories:
+- story: Happy path - rural eco tour
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
+  - action: utter_privacy_notice
+  - user: |
+      help me plan an eco-friendly holiday
+    intent: plan_trip
+  - action: trip_form
+  - active_loop: trip_form
+
+- story: Edge case - user asks for human mid-flow
+  steps:
+  - user: |
+      connect me to an advisor
+    intent: request_human
+  - action: action_handover_to_human
+
+- story: Edge case - gibberish triggers fallback
+  steps:
+  - user: |
+      asdf qwerty zzz
+    intent: nlu_fallback
+  - action: action_two_stage_fallback

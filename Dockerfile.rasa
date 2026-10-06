@@ -1,0 +1,8 @@
+# Rasa server image (spaCy model baked in)
+FROM rasa/rasa:3.6.20-spacy-en
+WORKDIR /app
+COPY . /app
+USER root
+RUN rasa train --fixed-model-name eco
+USER 1001
+CMD ["run", "--enable-api", "--cors", "*", "--model", "models/eco.tar.gz"]

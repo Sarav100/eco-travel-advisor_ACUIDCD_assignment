@@ -1,0 +1,8 @@
+digraph D { rankdir=LR; compound=true; node [shape=box style="rounded,filled" fontname="Helvetica" fontsize=11 fillcolor="#e8f0fb" color="#2b5c9e"]; edge[fontname="Helvetica" fontsize=9];
+ user [label="Browser / screen reader" fillcolor="#eef6f0" color="#1e7f4f"];
+ subgraph cluster_host { label="Docker Compose host (HF Spaces / VM)"; fontname="Helvetica"; style="rounded,dashed";
+  fe [label="frontend\nnginx :3000"]; rasa [label="rasa\nNLU + Core :5005"];
+  subgraph cluster_net { label="internal network"; style="rounded"; color="#999999"; act [label="action-server :5055\n(not published)"]; }
+  env [label=".env secrets\n(not in Git)" shape=note fillcolor="#fff4d6" color="#b26a00"]; }
+ apis [label="Climatiq · Amadeus\nOpenCage · advisor webhook" fillcolor="#f3eefb" color="#6b4ea0"];
+ user->fe [label="HTTPS"]; fe->rasa [label="REST /webhooks/rest"]; rasa->act; env->act [style=dashed]; act->apis [label="HTTPS, 2 s timeout"]; }

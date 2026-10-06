@@ -1,0 +1,65 @@
+{
+  "_note": "Curated static dataset. No reliable free API exists for eco-certification; values are compiled manually and must be re-verified before production use.",
+  "hotels": [
+    {
+      "name": "Casa Verde Lisboa",
+      "city": "Lisbon",
+      "price_per_night": 95,
+      "certification": "Green Key",
+      "verified": "2026-09",
+      "kgco2_per_night": 8.2
+    },
+    {
+      "name": "Hotel Alfama Eco",
+      "city": "Lisbon",
+      "price_per_night": 140,
+      "certification": "EU Ecolabel",
+      "verified": "2026-08",
+      "kgco2_per_night": 6.5
+    },
+    {
+      "name": "Spree Garden Hostel",
+      "city": "Berlin",
+      "price_per_night": 55,
+      "certification": "Green Key",
+      "verified": "2026-07",
+      "kgco2_per_night": 5.1
+    },
+    {
+      "name": "Carpathian Wood Lodge",
+      "city": "rural",
+      "price_per_night": 70,
+      "certification": "Green Globe",
+      "verified": "2026-06",
+      "kgco2_per_night": 4.3
+    },
+    {
+      "name": "Donau Green Rooms",
+      "city": "Vienna",
+      "price_per_night": 88,
+      "certification": "Green Key",
+      "verified": "2026-09",
+      "kgco2_per_night": 6.9
+    },
+    {
+      "name": "Prater Eco Hotel",
+      "city": "Vienna",
+      "price_per_night": 120,
+      "certification": "EU Ecolabel",
+      "verified": "2026-08",
+      "kgco2_per_night": 5.8
+    }
+  ],
+  "offset_programmes": [
+    {
+      "name": "Gold Standard Cookstoves",
+      "standard": "Gold Standard",
+      "eur_per_tonne": 18
+    },
+    {
+      "name": "Verra Forest Protection",
+      "standard": "VCS",
+      "eur_per_tonne": 14
+    }
+  ]
+}

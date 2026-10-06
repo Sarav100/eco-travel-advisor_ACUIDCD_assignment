@@ -1,0 +1,9 @@
+digraph N { rankdir=TB; nodesep=0.3; ranksep=0.35; node [shape=box style="rounded,filled" fontname="Helvetica" fontsize=11 fillcolor="#f3eefb" color="#6b4ea0"]; edge[color="#555555"];
+ in [label="\"train to Vienna under 800 euros\"" fillcolor="#eef6f0" color="#1e7f4f"];
+ tok [label="SpacyTokenizer"];
+ f [label="Featurisers: spaCy vectors (dense) · CountVectors word + char 1-4 · Regex · Lexical" shape=box3d];
+ diet [label="DIETClassifier — 2-layer transformer, shared encoder" fillcolor="#e8f0fb" color="#2b5c9e"];
+ i [label="Intent head (dot-product similarity)\n→ inform_budget 0.91"]; e [label="Entity head (CRF)\nVienna = destination · 800 = budget"];
+ fb [label="FallbackClassifier (threshold 0.6, ambiguity 0.1)"]; core [label="Rasa Core: RulePolicy · TEDPolicy · MemoizationPolicy" fillcolor="#eef6f0" color="#1e7f4f"];
+ {rank=same; in; tok;}
+ in->tok; tok->f->diet; diet->i; diet->e; i->fb; e->core; fb->core; }

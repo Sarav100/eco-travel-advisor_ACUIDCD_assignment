@@ -1,0 +1,132 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - plan_trip
+  - inform_destination
+  - inform_dates
+  - inform_budget
+  - inform_preference
+  - inform_location
+  - ask_carbon
+  - ask_hotels
+  - request_human
+  - out_of_scope
+  - nlu_fallback
+
+entities:
+  - destination
+  - origin
+  - date
+  - budget
+  - sustainability_level
+  - transport_mode
+
+slots:
+  destination:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: destination
+  origin:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: origin
+  travel_dates:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: date
+  budget:
+    type: float
+    influence_conversation: true
+    min_value: 0
+    max_value: 100000
+    mappings:
+      - type: from_entity
+        entity: budget
+  sustainability_level:
+    type: categorical
+    values: [low, medium, high]
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: sustainability_level
+  fallback_count:            # drives the two-stage clarification flow
+    type: float
+    initial_value: 0
+    influence_conversation: false
+    mappings:
+      - type: custom
+  handover_active:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+forms:
+  trip_form:
+    required_slots:
+      - destination
+      - travel_dates
+      - budget
+      - sustainability_level
+
+responses:
+  utter_greet:
+    - text: "Hi! I'm EcoTrip, your sustainable travel assistant. Where would you like to go?"
+      buttons:
+        - {title: "Lisbon", payload: '/inform_destination{"destination":"Lisbon"}'}
+        - {title: "Berlin", payload: '/inform_destination{"destination":"Berlin"}'}
+        - {title: "Somewhere rural", payload: '/inform_destination{"destination":"rural"}'}
+  utter_ask_destination:
+    - text: "Which city or region are you travelling to?"
+  utter_ask_travel_dates:
+    - text: "When are you planning to travel? (e.g. 12-15 May)"
+  utter_ask_budget:
+    - text: "What's your total budget in euros?"
+      buttons:
+        - {title: "Under €500", payload: '/inform_budget{"budget":"500"}'}
+        - {title: "€500-1500", payload: '/inform_budget{"budget":"1500"}'}
+        - {title: "€1500+", payload: '/inform_budget{"budget":"3000"}'}
+  utter_ask_sustainability_level:
+    - text: "How important is low carbon impact to you? ℹ️ 'High' prioritises rail and eco-certified stays even if they cost more."
+      buttons:
+        - {title: "High", payload: '/inform_preference{"sustainability_level":"high"}'}
+        - {title: "Medium", payload: '/inform_preference{"sustainability_level":"medium"}'}
+        - {title: "Low", payload: '/inform_preference{"sustainability_level":"low"}'}
+  utter_clarify_stage1:
+    - text: "Sorry, I didn't quite get that. Could you rephrase? For example: 'I want to visit Lisbon in May'."
+  utter_clarify_stage2:
+    - text: "I'm still not sure. Please pick one of these:"
+      buttons:
+        - {title: "Plan a trip", payload: "/plan_trip"}
+        - {title: "Compare carbon", payload: "/ask_carbon"}
+        - {title: "Talk to a human", payload: "/request_human"}
+  utter_privacy_notice:
+    - text: "🔒 I only store your trip details for this session. Nothing is kept after you close the chat."
+  utter_goodbye:
+    - text: "Safe and green travels! 🌱"
+  utter_out_of_scope:
+    - text: "I can only help with sustainable trip planning."
+
+actions:
+  - action_carbon_estimate
+  - action_search_options
+  - action_rank_options
+  - action_handover_to_human
+  - action_two_stage_fallback
+  - action_default_fallback
+  - validate_trip_form
+
+session_config:
+  session_expiration_time: 30
+  carry_over_slots_to_new_session: false   # GDPR: no persistence across sessions

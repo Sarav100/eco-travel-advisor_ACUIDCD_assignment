@@ -1,0 +1,18 @@
+# docker compose up --build   ->  frontend :3000, Rasa :5005
+services:
+  rasa:
+    build: {context: ., dockerfile: Dockerfile.rasa}
+    ports: ["5005:5005"]
+    depends_on: [action-server]
+    networks: [internal]
+  action-server:
+    build: {context: ., dockerfile: Dockerfile.actions}
+    env_file: .env                 # API keys injected at runtime, never baked in
+    expose: ["5055"]               # internal only - not published to the host
+    networks: [internal]
+  frontend:
+    image: nginx:alpine
+    volumes: ["./frontend:/usr/share/nginx/html:ro"]
+    ports: ["3000:80"]
+networks:
+  internal: {}

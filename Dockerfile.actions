@@ -1,0 +1,10 @@
+# Action server image
+FROM rasa/rasa-sdk:3.6.2
+WORKDIR /app
+COPY requirements-actions.txt .
+USER root
+RUN pip install --no-cache-dir -r requirements-actions.txt
+COPY actions /app/actions
+COPY mock_data /app/mock_data
+USER 1001
+CMD ["start", "--actions", "actions"]

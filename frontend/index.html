@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+  EcoTrip chat UI - ReactJS (UMD build, no bundler) talking to Rasa's REST channel.
+  Renders: dynamic quick-reply buttons, hotel carousel, colour-coded carbon cards
+  (green / amber / red from Climatiq data), and a human-handover banner.
+  Accessibility: aria-live region for new messages, labelled controls, keyboard focus,
+  colour bands always paired with a text label (never colour alone).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoTrip - Sustainable Travel Assistant</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>
+  :root{--green:#1e7f4f;--amber:#b26a00;--red:#b3261e;--bg:#f6f8f5;--ink:#1d2a22}
+  body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  .chat{max-width:520px;margin:0 auto;height:100vh;display:flex;flex-direction:column}
+  header{background:var(--green);color:#fff;padding:12px 16px;font-weight:600}
+  .handover{background:#fff4d6;border-left:6px solid var(--amber);padding:10px 14px}
+  .log{flex:1;overflow-y:auto;padding:12px}
+  .msg{max-width:80%;padding:8px 12px;border-radius:12px;margin:6px 0;line-height:1.4}
+  .bot{background:#fff;border:1px solid #dde5dd}.user{background:var(--green);color:#fff;margin-left:auto}
+  .btns button{margin:4px 4px 0 0;border:1px solid var(--green);background:#fff;color:var(--green);
+    border-radius:16px;padding:6px 12px;cursor:pointer}
+  .btns button:focus{outline:3px solid #8fd1ad}
+  .cards{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
+  .card{min-width:96px;flex:1 1 40%;border-radius:10px;padding:8px;color:#fff}
+  .green{background:var(--green)}.amber{background:var(--amber)}.red{background:var(--red)}
+  .hotel{min-width:150px;background:#fff;border:1px solid #dde5dd;border-radius:10px;padding:8px}
+  form{display:flex;border-top:1px solid #dde5dd}
+  input{flex:1;padding:12px;border:0;font-size:16px}
+  form button{background:var(--green);color:#fff;border:0;padding:0 18px}
+</style>
+</head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const RASA = window.RASA_URL || "http://localhost:5005/webhooks/rest/webhook";
+const SENDER = "web-" + Math.random().toString(36).slice(2);   // anonymous session id
+const LABEL = {green: "Low emission", amber: "Moderate", red: "High emission"};
+
+function App() {
+  const [msgs, setMsgs] = React.useState([]);
+  const [text, setText] = React.useState("");
+  const [handover, setHandover] = React.useState(false);
+
+  async function send(message, display) {
+    setMsgs(m => [...m, {from: "user", text: display || message}]);
+    try {
+      const res = await fetch(RASA, {method: "POST", headers: {"Content-Type": "application/json"},
+                                     body: JSON.stringify({sender: SENDER, message})});
+      const data = await res.json();
+      data.forEach(d => { if (d.custom && d.custom.type === "handover") setHandover(true); });
+      setMsgs(m => [...m, ...data.map(d => ({from: "bot", ...d}))]);
+    } catch (err) {          // network error -> friendly fallback, never a blank screen
+      setMsgs(m => [...m, {from: "bot", text: "Connection problem - please try again."}]);
+    }
+  }
+
+  // GPS: browser geolocation -> coordinates sent as origin ("lat,lon").
+  // Only triggered by an explicit button press (GDPR: user-initiated, not stored).
+  function shareLocation() {
+    if (!navigator.geolocation) return send("/inform_location", "📍 Location unavailable");
+    navigator.geolocation.getCurrentPosition(
+      pos => { const v = pos.coords.latitude.toFixed(2) + "," + pos.coords.longitude.toFixed(2);
+               send('/inform_location{"origin":"' + v + '"}', "📍 Shared my location"); },
+      () => setMsgs(m => [...m, {from: "bot", text: "Location permission denied - please type your city."}]));
+  }
+
+  function renderCustom(c) {
+    if (c.type === "carbon_cards") return e("div", {className: "cards"}, c.items.map(i =>
+      e("div", {key: i.mode, className: "card " + i.band, role: "group",
+                "aria-label": `${i.mode}: ${i.kgco2e} kilograms CO2, ${LABEL[i.band]}`},
+        e("strong", null, i.mode), e("div", null, i.kgco2e + " kg CO₂e"), e("small", null, LABEL[i.band]))));
+    if (c.type === "hotel_carousel") return e("div", {className: "cards"}, c.items.map(h =>
+      e("div", {key: h.title, className: "hotel"}, e("strong", null, h.title),
+        e("div", null, h.price ? "€" + h.price + "/night" : "Price on request"),
+        e("small", null, "🌿 " + h.badge))));
+    return null;
+  }
+
+  return e("div", {className: "chat"},
+    e("header", null, "🌱 EcoTrip Advisor"),
+    handover && e("div", {className: "handover", role: "status"}, "👤 A human advisor has joined this chat"),
+    e("div", {className: "log", "aria-live": "polite"}, msgs.map((m, i) =>
+      e("div", {key: i},
+        m.text && e("div", {className: "msg " + m.from}, m.text),
+        m.custom && renderCustom(m.custom),
+        m.buttons && e("div", {className: "btns"}, m.buttons.map(b =>
+          e("button", {key: b.title, onClick: () => send(b.payload, b.title)}, b.title)))))),
+    e("form", {onSubmit: ev => { ev.preventDefault(); if (text.trim()) { send(text); setText(""); } }},
+      e("label", {htmlFor: "msg", style: {position: "absolute", left: "-9999px"}}, "Message"),
+      e("button", {type: "button", onClick: shareLocation, "aria-label": "Share my location",
+                   style: {background: "#fff", color: "#1e7f4f", border: 0, padding: "0 12px", fontSize: 18}}, "📍"),
+      e("input", {id: "msg", value: text, placeholder: "Type a message…", onChange: ev => setText(ev.target.value)}),
+      e("button", {type: "submit"}, "Send")));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script></body></html>

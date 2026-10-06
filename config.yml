@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+# Rasa NLU + Core configuration
+# Primary pipeline: spaCy tokeniser/featuriser + DIETClassifier (CPU friendly)
+# ------------------------------------------------------------------
+recipe: default.v1
+language: en
+assistant_id: eco-travel-advisor
+
+pipeline:
+  - name: SpacyNLP                 # loads en_core_web_md
+    model: en_core_web_md
+  - name: SpacyTokenizer
+  - name: SpacyFeaturizer          # dense word vectors
+  - name: RegexFeaturizer          # dates / budgets
+  - name: LexicalSyntacticFeaturizer
+  - name: CountVectorsFeaturizer
+  - name: CountVectorsFeaturizer   # char n-grams for typo robustness
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+  - name: EntitySynonymMapper
+  - name: FallbackClassifier       # triggers nlu_fallback below threshold
+    threshold: 0.6
+    ambiguity_threshold: 0.1
+
+# OPTIONAL (only if latency stays < 3 s): replace SpacyNLP/SpacyFeaturizer with
+#  - name: LanguageModelFeaturizer
+#    model_name: "distilbert"
+#    model_weights: "distilbert-base-uncased"
+
+policies:
+  - name: MemoizationPolicy
+  - name: RulePolicy
+    core_fallback_threshold: 0.4
+    core_fallback_action_name: action_default_fallback
+    enable_fallback_prediction: true
+  - name: TEDPolicy
+    max_history: 5
+    epochs: 100

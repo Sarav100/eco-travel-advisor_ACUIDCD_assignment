@@ -1,0 +1,25 @@
+digraph G {
+ rankdir=TB; bgcolor="white"; nodesep=0.35; ranksep=0.4;
+ node [shape=box style="rounded,filled" fontname="Helvetica" fontsize=11 fillcolor="#eef6f0" color="#1e7f4f"];
+ edge [fontname="Helvetica" fontsize=9 color="#555555"];
+ start [label="User: greet / plan_trip" fillcolor="#1e7f4f" fontcolor="white"];
+ privacy [label="utter_greet + privacy notice\n[quick replies: destinations]"];
+ form [label="trip_form (adaptive intake)\nasks only for EMPTY slots"];
+ dest [label="destination?\n→ validate via geocode"]; dates [label="travel_dates?"]; budget [label="budget? [buttons]"]; pref [label="sustainability_level?\n[High | Medium | Low] + ℹ tooltip"];
+ search [label="action_search_options\nAmadeus + curated eco JSON"];
+ carbon [label="action_carbon_estimate\nClimatiq per mode"];
+ sw [label="sustainability_level" shape=diamond fillcolor="#fff4d6" color="#b26a00"];
+ hi [label="weights 0.60 / 0.25 / 0.15\nrail & certified first\nflights shown with 🔴 alert"];
+ med [label="weights 0.40 / 0.40 / 0.20\nbalanced list"];
+ lo [label="weights 0.20 / 0.60 / 0.20\ncheapest first\n+ gentle low-carbon nudge"];
+ bud [label="over budget?" shape=diamond fillcolor="#fff4d6" color="#b26a00"];
+ flag [label="flag option, −0.2 penalty\noffer cheaper alternative"];
+ rank [label="action_rank_options\ncolour-coded cards + dynamic buttons"];
+ cx [label="complex? (multi-city,\ngroup >6, accessibility needs)\nor user asks" shape=diamond fillcolor="#fff4d6" color="#b26a00"];
+ human [label="action_handover_to_human\ncontext JSON → advisor\nUI banner shown" fillcolor="#fde8e6" color="#b3261e"];
+ done [label="confirm & goodbye" fillcolor="#1e7f4f" fontcolor="white"];
+ {rank=same; dest; dates; budget; pref;} {rank=same; search; carbon;} start->privacy->form; form->dest->dates->budget->pref; pref->search->carbon->sw;
+ sw->hi [label="high"]; sw->med [label="medium"]; sw->lo [label="low"];
+ hi->bud; med->bud; lo->bud; bud->flag [label="yes"]; bud->rank [label="no"]; flag->rank;
+ rank->cx; cx->human [label="yes"]; cx->done [label="no"];
+}

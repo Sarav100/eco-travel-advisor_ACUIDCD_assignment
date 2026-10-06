@@ -1,0 +1,150 @@
+version: "3.1"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - good evening
+    - hello EcoTrip
+    - hi bot
+    - morning!
+    - hi
+    - hello
+    - hey there
+    - good morning
+    - hiya
+- intent: goodbye
+  examples: |
+    - cheers, bye
+    - talk later
+    - that's everything thanks
+    - ciao
+    - bye
+    - see you
+    - thanks, that's all
+    - goodbye
+- intent: affirm
+  examples: |
+    - yes please
+    - that works
+    - absolutely
+    - ok great
+    - yes
+    - sure
+    - sounds good
+    - correct
+- intent: deny
+  examples: |
+    - no thanks
+    - that doesn't work
+    - not that one
+    - I'd rather not
+    - no
+    - not really
+    - nope
+    - I don't think so
+- intent: plan_trip
+  examples: |
+    - I'd like to book an eco tour
+    - plan a carbon neutral business trip
+    - I need help with holiday plans
+    - organise a short city break for me
+    - can you help me travel greener
+    - I want to plan a trip
+    - help me plan an eco-friendly holiday
+    - can you organise a green city break
+    - I need a sustainable business trip
+    - plan a low carbon weekend away
+- intent: inform_destination
+  examples: |
+    - I'm heading to [Munich](destination)
+    - [Lisbon](destination) for a few days
+    - visit [Berlin](destination) from [Bucharest](origin)
+    - somewhere in the [Alps](destination)
+    - going to [Vienna](destination)
+    - I want to go to [Lisbon](destination)
+    - [Berlin](destination) please
+    - thinking about [Amsterdam](destination)
+    - from [Bucharest](origin) to [Vienna](destination)
+    - an eco tour in the [Carpathians](destination)
+- intent: inform_dates
+  examples: |
+    - [12-15 May](date)
+    - between [1 June](date) and [5 June](date)
+    - [this Friday](date)
+    - for [three days in July](date)
+    - from [12 May](date) to [15 May](date)
+    - [next weekend](date)
+    - in [June](date)
+    - leaving on [3 March](date)
+- intent: inform_budget
+  examples: |
+    - about [1500](budget) euros total
+    - budget [600](budget)
+    - under [900](budget) please
+    - max [3000](budget) EUR
+    - my budget is [800](budget) euros
+    - around [1200](budget)
+    - no more than [500](budget) euro
+    - I can spend [2000](budget)
+- intent: inform_preference
+  examples: |
+    - emissions matter [a lot]{"entity":"sustainability_level","value":"high"} to me
+    - [low](sustainability_level)
+    - [very important]{"entity":"sustainability_level","value":"high"}
+    - [somewhat]{"entity":"sustainability_level","value":"medium"} I guess
+    - price matters more, [not that important]{"entity":"sustainability_level","value":"low"}
+    - [medium](sustainability_level) please
+    - sustainability is [very important]{"entity":"sustainability_level","value":"high"}
+    - I care [a lot]{"entity":"sustainability_level","value":"high"} about emissions
+    - [somewhat]{"entity":"sustainability_level","value":"medium"} important
+    - [not that important]{"entity":"sustainability_level","value":"low"}
+    - [high](sustainability_level)
+    - [medium](sustainability_level)
+- intent: inform_location
+  examples: |
+    - I'll be leaving from [Vienna](origin)
+    - my starting point is [Lisbon](origin)
+    - share my GPS location
+    - I'm currently in [Bucharest](origin)
+    - use my location
+    - I'm based in [Munich](origin)
+- intent: ask_carbon
+  examples: |
+    - what are the emissions of a [car](transport_mode) trip
+    - how green is the [train](transport_mode)
+    - carbon footprint of my route
+    - which option pollutes least
+    - what's the carbon footprint of flying vs train
+    - how much CO2 does the [train](transport_mode) emit
+    - compare emissions by [bus](transport_mode) and [plane](transport_mode)
+    - is driving worse than flying
+- intent: ask_hotels
+  examples: |
+    - eco certified hotels please
+    - where can I stay sustainably
+    - green key hotels near the centre
+    - show me eco hotels
+    - any green certified accommodation
+    - sustainable places to stay
+- intent: request_human
+  examples: |
+    - I'd like an expert
+    - real person please
+    - human agent
+    - talk to someone
+    - I want to speak to a person
+    - connect me to an advisor
+    - this is too complicated, get a human
+    - can a travel agent help me
+- intent: out_of_scope
+  examples: |
+    - what's the weather on Mars
+    - who won the election
+    - order me a pizza
+    - what's the football score
+    - tell me a joke
+    - write my essay
+
+- regex: budget
+  examples: |
+    - \b\d{2,5}\b
